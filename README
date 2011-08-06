@@ -1,0 +1,1 @@
+A quick example of using call/cc to implement the amb operator in scheme.
