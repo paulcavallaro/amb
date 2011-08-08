@@ -1,5 +1,7 @@
+;; Placeholder definition for amb-fail
 (define amb-fail '*)
 
+;; Initialize the amb-fail
 (define initialize-amb-fail
   (lambda ()
     (set! amb-fail
@@ -8,6 +10,7 @@
 
 (initialize-amb-fail)
 
+;; The basic amb operator
 (define-syntax amb
   (syntax-rules ()
     ((amb alt ...)
@@ -24,25 +27,47 @@
           ...
           (+prev-amb-fail)))))))
 
-(define-syntax my-sum
+;; Tutorial of define-syntax
+(define-syntax double-sum
   (syntax-rules ()
     ((my-sum x ...)
-     (+ (* 2 x)
-        ...))))
-
-(define-syntax add-em-up
-  (syntax-rules ()
-    ((add-em-up x ...)
      (+ (* 2 x) ...))))
 
+;; More advanced usage of syntax-rules
 (define-syntax my-let
   (syntax-rules ()
-    ((my-let ((?variable ?expression)
-           ...)
-       ?body
-       ...)
+    ((my-let ((?variable ?expression) ...)
+             ?body ...)
      ((lambda (?variable ...)
-        ?body
-        ...)
+        ?body ...)
       ?expression
-            ...))))
+      ...))))
+
+;; Direct style
+(define myfun
+  (lambda (x)
+    (* (+ x 1) 5)))
+
+;; Continuation Passing Style (CPS)
+(define (*& x y k)
+  (k (* x y)))
+
+;; CPS
+(define (+& x y k)
+  (k (+ x y)))
+
+;; CPS
+(define myfun-cps
+  (lambda (x k)
+    (+& x 1 (lambda (x-plus-1)
+              (*& x-plus-1 5 k)))))
+
+;; Generalize our *& and +& operators
+(define (cps-prim f)
+  (lambda args
+    (let ((r (reverse args)))
+      ((car r) (apply f (reverse (cdr r)))))))
+
+(define *& (cps-prim *))
+(define +& (cps-prim +))
+
