@@ -164,10 +164,6 @@
 ;; with yang. We can use the mental trick of replacing the call/cc
 ;; form with yang.
 ;;
-;; This current stack, stack_1, is also in the middle of a let
-;; binding, but defining yang. We again can think of calling k_1 with arg the
-;; same way as above, as replacing that "call/cc" bit with arg.
-;;
 ;; So now to go through the first level:
 ;;
 ;; (1) yin gets bound to k_0 which has the side effect of displaying
@@ -176,10 +172,41 @@
 ;; (2) yang gets bound to k_1 which has the side effect of displaying
 ;; the "*" character.
 ;;
-;; (3) yin is called with yang. Here is where things start to get
-;; messy =p. yin is bound to k_0, so we can use the mental trick of
-;; replacing the "call/cc" bit in the yin binding with yang, aka
-;; k_1. So now yin is bound to 
+;; At this point the output is: "@*"
+;;
+;; (3) yin is called with yang. yin is bound to k_0, so we can use the
+;; mental trick of replacing the "call/cc" bit in the yin binding with
+;; yang, aka k_1. So now yin is bound to k_1, but in doing so
+;; yin-display is called on k_1, displaying the "@" character.
+;;
+;; (4) yang gets bound to the current continuation k_2, with
+;; yang-display called on k_2 which emits the character "*"
+;;
+;; (5) yin, which is curently bound to k_1, gets called with yang,
+;; which is currently bound to k_2. This binds yang to yang-display
+;; called on k_2 which emits the character "*" and returns k_2 for
+;; yang to be bound to. It's important to note that in the k_1
+;; continuation yin is bound to k_0.
+;;
+;; At this point the output is: "@*@**"
+;;
+;; (6) Now yin, bound to k_0, is called with yang, bound to k_2. This
+;; emits the "@" character, and binds yin to k_2. Then yang gets bound
+;; to the current continuation k_3 emiting the "*" character.
+;;
+;; (7) yin, which is bound to k_2, gets called with yang, which is
+;; bound to k_3. This means yang gets bound to k_3, but not without
+;; emiting the "*" character first. In the k_2 continuation we should
+;; note that yin is bound to k_1.
+;;
+;; (8) yin, bound to k_1, is called with yang, bound to k_3. This
+;; binds yang to k_3, and emits the "*" character as a side effect as
+;; usual. In the k_1 continuation, as you'll remember, yin is bound to
+;; k_0.
+;;
+;; At this point the output is "@*@**@***"
+;;
+;; Finally, we can see how this is going to go. 
 ;;
 
 ;; Now we can rewrite it anonymizing both yin and yang-display to make
