@@ -206,11 +206,39 @@
 ;;
 ;; At this point the output is "@*@**@***"
 ;;
-;; Finally, we can step back and look at the big picture. Every go
-;; around yang gets bound to a continuation that will emit on more "*"
-;; character, while yin gets bound to k_0 again. 
+;; Finally, we can step back and look at the big picture.
+;; 
+;; We can see the pattern emerging, next will be the @ sign followed
+;; by four * characters. And so on and so forth.
 ;;
-
+;; If we go by our convention of labeling for continuations, here's a
+;; quick breakdown of how it goes.
+;;
+;; (1) yin 0 yang _ @
+;; yin gets bound in the let
+;; (2) yin 0 yang 1 @*
+;; yang gets bound in the let
+;; (3) yin 1 yang _ @*@
+;; calling continuation k_0 with k_1 binds yin to k_1 in the let; in
+;; continuation k_0 yang is unbound
+;; (4) yin 1 yang 2 @*@*
+;; yang gets bound to new continuation k_2
+;; (5) yin 0 yang 2 @*@**
+;; calling continuation k_1 with k_2 binds yang to k_2; in k_1 yin is
+;; bound to k_0
+;; (6) yin 2 yang _ @*@**@*
+;; calling continuation k_0 with k_2 binds yin to k_2; in k_0 yang is
+;; unbound
+;; (7) yin 1 yang 3 @*@**@**
+;; yang gets bound in the let to new continuation k_3
+;; (8) yin 0 yang 3 @*@**@***
+;; calling continuation k_1 with k_3 binds yang to k_3; in k_1 yin is
+;; bound to k_0
+;;
+;; To think about this at a higher level of abstraction, it's like
+;; 
+;;
+;;
 ;; Now we can rewrite it anonymizing both yin and yang-display to make
 ;; it slightly harder to understand, and hence make ourselves feel
 ;; cooler for understanding it =p
