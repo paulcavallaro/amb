@@ -206,7 +206,9 @@
 ;;
 ;; At this point the output is "@*@**@***"
 ;;
-;; Finally, we can see how this is going to go. 
+;; Finally, we can step back and look at the big picture. Every go
+;; around yang gets bound to a continuation that will emit on more "*"
+;; character, while yin gets bound to k_0 again. 
 ;;
 
 ;; Now we can rewrite it anonymizing both yin and yang-display to make
